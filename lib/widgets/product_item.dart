@@ -14,35 +14,31 @@ class ProductItem extends StatelessWidget {
     final product = Provider.of<Product>(context);
     final cart = Provider.of<CartProvider>(context, listen: false);
     final products = Provider.of<ProductsProvider>(context, listen: false);
-    final auth = Provider.of<AuthProvider>(context, listen: false);
     return Card(
       elevation: 5,
       child: Column(
         children: [
           Expanded(
             child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 Navigator.pushNamed(context, ProductDetailsScreen.routeName,
                     arguments: product);
               },
-              child: FadeInImage(
-                placeholder: const AssetImage(
-                    'assets/images/006 product-placeholder.png'),
-                fadeInDuration: const Duration(seconds: 3),
-                fadeOutDuration: const Duration(seconds: 3),
-                image: NetworkImage(product.imageUrl),
-                fit: BoxFit.contain,
-                placeholderFit: BoxFit.contain,
-                imageErrorBuilder: (context, object, stackTrace) {
-                  return const SizedBox();
-                },
-                // child: Image.network(
-                //   product.imageUrl,
-                //   fit: BoxFit.contain,
-                //   errorBuilder: (context, object, stackTrace) {
-                //     return const SizedBox();
-                //   },
-                // ),
+              child: Hero(
+                tag: product.id,
+                child: FadeInImage(
+                  placeholder: const AssetImage(
+                      'assets/images/006 product-placeholder.png'),
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  fadeOutDuration: const Duration(milliseconds: 300),
+                  image: NetworkImage(product.imageUrl),
+                  fit: BoxFit.contain,
+                  placeholderFit: BoxFit.contain,
+                  imageErrorBuilder: (context, object, stackTrace) {
+                    return Container(color: Colors.red.withOpacity(0.2),);
+                  },
+                ),
               ),
             ),
           ),

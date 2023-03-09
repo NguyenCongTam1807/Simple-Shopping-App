@@ -79,7 +79,7 @@ class ProductsProvider with ChangeNotifier {
   List<Product> _cart = [];
   List<Product> get cart => _cart;
 
-  Future<void> fetchProducts([bool filterByUser = true]) async {
+  Future<void> fetchProducts({bool filterByUser = true}) async {
     try {
       final filterString = filterByUser?'&orderBy="creatorId"&equalTo="$userId"':"";
       final productsResponse =

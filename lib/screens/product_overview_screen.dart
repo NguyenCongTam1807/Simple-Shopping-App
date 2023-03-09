@@ -55,15 +55,12 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   var _showFav = false;
   var isInit = false;
   var remoteProducts = [];
-  var isLoading = false;
   @override
   Future<void> didChangeDependencies() async {
     if (!isInit) {
       isInit = true;
-      isLoading = true;
       await Provider.of<ProductsProvider>(context, listen: false)
-          .fetchProducts(false);
-      isLoading = false;
+          .fetchProducts(filterByUser: false);
       if (mounted) {
         setState(() {});
       }
@@ -73,6 +70,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final productsProvider = Provider.of<ProductsProvider>(context, listen: false);
     return Scaffold(
       drawer: const MainDrawer(),
       appBar: AppBar(
@@ -137,20 +135,19 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                   ])
         ],
       ),
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : Provider.of<ProductsProvider>(context, listen: false)
-                  .products
-                  .isEmpty
-              ? const Center(
-                  child: Text(
-                    "There's no products to display",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                )
-              : ProductsGrid(_showFav),
+      body: RefreshIndicator(
+        onRefresh: () => productsProvider.fetchProducts(filterByUser: false),
+        child: Provider.of<ProductsProvider>(context, listen: false)
+                    .products
+                    .isEmpty
+                ? const Center(
+                    child: Text(
+                      "There's no products to display",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  )
+                : ProductsGrid(_showFav),
+      ),
     );
   }
 }
