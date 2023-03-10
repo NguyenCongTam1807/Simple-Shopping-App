@@ -96,7 +96,7 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  void logout() {
+  Future<void> logout() async {
     _token = null;
     _userId = null;
     _expireDate = null;
@@ -105,7 +105,8 @@ class AuthProvider with ChangeNotifier {
       _authTimer = null;
     }
     notifyListeners();
-    SharedPreferences.getInstance().then((pref) => pref.remove('userData') );
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('userData');
   }
 
   void autoLogout() {
