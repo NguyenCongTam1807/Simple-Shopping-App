@@ -70,7 +70,8 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+    final productsProvider =
+        Provider.of<ProductsProvider>(context, listen: false);
     return Scaffold(
       drawer: const MainDrawer(),
       appBar: AppBar(
@@ -135,18 +136,42 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                   ])
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => productsProvider.fetchProducts(filterByUser: false),
-        child: Provider.of<ProductsProvider>(context, listen: false)
-                    .products
-                    .isEmpty
-                ? const Center(
-                    child: Text(
-                      "There's no products to display",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  )
-                : ProductsGrid(_showFav),
+      body: FutureBuilder(
+        future: productsProvider.fetchProducts(filterByUser: false),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.connectionState != ConnectionState.waiting) {
+            return RefreshIndicator(
+                onRefresh: () =>
+                    productsProvider.fetchProducts(filterByUser: false),
+                child: Provider.of<ProductsProvider>(context, listen: false)
+                        .products
+                        .isEmpty
+                    ? const Center(
+                        child: Text(
+                          "There's no products to display",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      )
+                    : ProductsGrid(_showFav));
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+        // child: RefreshIndicator(
+        //   onRefresh: () => productsProvider.fetchProducts(filterByUser: false),
+        //   child: Provider.of<ProductsProvider>(context, listen: false)
+        //               .products
+        //               .isEmpty
+        //           ? const Center(
+        //               child: Text(
+        //                 "There's no products to display",
+        //                 style: TextStyle(fontSize: 20),
+        //               ),
+        //             )
+        //           : ProductsGrid(_showFav),
+        // ),
       ),
     );
   }

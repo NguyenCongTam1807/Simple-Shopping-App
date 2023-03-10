@@ -15,7 +15,6 @@ class ProductManagementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
-    print("BUILD");
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Products'),

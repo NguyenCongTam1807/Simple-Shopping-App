@@ -11,8 +11,21 @@ class OrderItem extends StatefulWidget {
   State<OrderItem> createState() => _OrderItemState();
 }
 
-class _OrderItemState extends State<OrderItem> {
+class _OrderItemState extends State<OrderItem> with SingleTickerProviderStateMixin {
   bool _expanded = false;
+
+  late AnimationController _expandController;
+  late Animation<double> _sizeAnimation;
+
+  @override
+  void initState() {
+    _expandController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 250)
+    );
+    _sizeAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _expandController, curve: Curves.easeInOut));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +44,16 @@ class _OrderItemState extends State<OrderItem> {
                   DateFormat("hh:mm, dd/MM/yyyy").format(widget.order.dateTime))
             ],
           ),
-          if (_expanded)
-            ListView.builder(
-              itemBuilder: (ctx, index) {
-                return CartItem(widget.order.cartProducts[index]);
-              },
-              itemCount: widget.order.cartProducts.length,
-              shrinkWrap: true,
+          //if (_expanded)
+            SizeTransition(
+              sizeFactor: _sizeAnimation,
+              child: ListView.builder(
+                itemBuilder: (ctx, index) {
+                  return CartItem(widget.order.cartProducts[index]);
+                },
+                itemCount: widget.order.cartProducts.length,
+                shrinkWrap: true,
+              ),
             ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,7 +62,7 @@ class _OrderItemState extends State<OrderItem> {
               const Spacer(),
               Text(
                 "Show ${_expanded ? "less" : "more"}",
-                style: TextStyle(fontSize: 10),
+                style: const TextStyle(fontSize: 10),
               ),
               const SizedBox(
                 width: 4,
@@ -64,6 +80,11 @@ class _OrderItemState extends State<OrderItem> {
                   onTap: () {
                     setState(() {
                       _expanded = !_expanded;
+                      if (_expanded) {
+                        _expandController.forward();
+                      } else {
+                        _expandController.reverse();
+                      }
                     });
                   },
                 ),
